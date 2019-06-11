@@ -7,7 +7,8 @@ var failWord = [];
 //estos valores se utilizan para dimensionar inicialmente la sopa de letras, pero pueden cambiar segun las palabras ingresadas.
 var heigth = 15;
 var width = 15;
-
+var tabla;
+var boxLetter = [];
 var ejemplo = ["Repollo", "Nabo", "Rábano", "Zanahoria","Viento", "Lluvia", "Fuego","Manzana", "Banana"];
 
 
@@ -34,12 +35,16 @@ function start(){
 */
 function setWords(){
 	words = [];
+	
 	let word;
-	for (var i = 0; i < ejemplo.length; i++) {
-		word = new Object();
-		word.chars = Array.from(ejemplo[i]);
-		word.size = word.chars.length;
-		words.push(word);
+	let inputs = document.getElementById("inputsWords").children;
+	for (var i = 0; i < inputs.length ; i++) {
+		if (inputs[i].value !== "") {
+			word = new Object();
+			word.chars = Array.from(inputs[i].value.toLowerCase());
+			word.size = word.chars.length;
+			words.push(word);
+		}
 	}
 }
 
@@ -200,51 +205,50 @@ function getRandomInt(min, max) {
 
 
 
-function prueba(){
+function generate(){
 	setWords();
 	createSoupAlphabelt();
 	putAllWordsInBoxes();
 	genera_tabla();
 }
 
-
 function genera_tabla() {
-  // Obtener la referencia del elemento body
   var body = document.getElementsByTagName("body")[0];
- 
-  // Crea un elemento <table> y un elemento <tbody>
-  var tabla   = document.createElement("table");
+  if (tabla) {
+  		tabla.setAttribute("class", "hidden");
+  	}
+  tabla   = document.createElement("table");
   var tblBody = document.createElement("tbody");
- 
-  // Crea las celdas
   for (var i = 0; i < heigth; i++) {
-    // Crea las hileras de la tabla
     var hilera = document.createElement("tr");
- 
     for (var j = 0; j < width; j++) {
-      // Crea un elemento <td> y un nodo de texto, haz que el nodo de
-      // texto sea el contenido de <td>, ubica el elemento <td> al final
-      // de la hilera de la tabla
       var celda = document.createElement("td");
       var textoCelda = "";
       if (boxes[(width*i)+j].letter) {
       	textoCelda = document.createTextNode(boxes[(width*i)+j].letter);
+      	celda.appendChild(textoCelda);
+      	boxLetter.push(celda);
       }
       else{
-      	textoCelda = document.createTextNode(".....");
+      	textoCelda = document.createTextNode(charFill[getRandomInt(0,25)]);
+      	celda.appendChild(textoCelda);
       }
-      celda.appendChild(textoCelda);
+      
       hilera.appendChild(celda);
     }
- 
-    // agrega la hilera al final de la tabla (al final del elemento tblbody)
     tblBody.appendChild(hilera);
   }
- 
-  // posiciona el <tbody> debajo del elemento <table>
   tabla.appendChild(tblBody);
-  // appends <table> into <body>
   body.appendChild(tabla);
-  // modifica el atributo "border" de la tabla y lo fija a "2";
-  tabla.setAttribute("border", "2");
+  tabla.setAttribute("class", "tabla");
+}
+function show(){
+	for(var i = 0; i < boxLetter.length;i++){
+		boxLetter[i].setAttribute("class", "letter");
+	}
+}
+function validar(id){
+	if (!id.checkValidity()) {
+		alert("revisar por favor");
+	}
 }

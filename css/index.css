@@ -2,3 +2,21 @@ body{
 	margin:0px;
 	background-color: white;
 }
+
+.tabla{
+    border: solid;
+    margin: auto;
+    margin-top: 168px;
+}
+
+.home{
+	width: 600px;
+	margin: auto;
+}
+.hidden{
+	display: none;
+}
+.letter{
+	background: black;
+	color: white;
+}
