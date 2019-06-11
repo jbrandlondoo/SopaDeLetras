@@ -8,6 +8,9 @@ var failWord = [];
 var heigth = 15;
 var width = 15;
 
+var ejemplo = ["Repollo", "Nabo", "Rábano", "Zanahoria","Viento", "Lluvia", "Fuego","Manzana", "Banana"];
+
+
 function start(){
 	console.log("Bienvenido!");
 }
@@ -32,11 +35,10 @@ function start(){
 function setWords(){
 	words = [];
 	let word;
-	for (var i = 0; i < 10; i++) {
+	for (var i = 0; i < ejemplo.length; i++) {
 		word = new Object();
-		word.chars = Array.from("juan");
+		word.chars = Array.from(ejemplo[i]);
 		word.size = word.chars.length;
-		word.organization = getRandomInt(1, 9);
 		words.push(word);
 	}
 }
@@ -50,28 +52,16 @@ function setWords(){
 *@param NO
 *@return NO
 */
-function createBoxes(){
-	boxes = [];
-	let box;
-	for (var i = 0; i < (heigth*width); i++) {
-		box = new Object();
-		box.nLetter = charFill[getRandomInt(0, 24)];
-		box.state = 0;
-		box.position = i;
-		boxes.push(box);
+function createSoupAlphabelt(){
+	for(var i = 0; i < (heigth*width);i++){
+		boxes[i] = new Object();
 	}
 }
 
 
-/**
-*@description
-*@param
-*@return 
-*/
 function putAllWordsInBoxes(){
 	for (var i = 0; i < words.length; i++) {
 		putWordInBox(words[i]);
-		console.log(i);
 	}
 }
 
@@ -81,7 +71,8 @@ function putAllWordsInBoxes(){
 *@return 
 */
 function putWordInBox(word){
-	let organization = word.organization;
+	let organization = getRandomInt(1,7);
+	word.organization = organization;
 	if (organization == 1 || organization == 2) {
 		putHorizontal(word);
 	}
@@ -91,9 +82,9 @@ function putWordInBox(word){
 	if (organization == 5 || organization == 6) {
 		putDiagonalLeft(word);
 	}
-	if (organization == 7 || organization == 8) {
-		putDiagonalRight(word);
-	}
+	// if (organization == 7 || organization == 8) {
+	// 	putDiagonalRight(word);
+	// }
 }
 
 /**
@@ -102,36 +93,29 @@ function putWordInBox(word){
 *@return 
 */
 function putVertical(word){
-	let arrayLetter = word.chars;
-	let boxesTemp, column = getRandomInt(0,(width*heigth)-word.size);;
-	let index;
+	var index;
+	var arrayLetter = word.chars.slice();
+	var temp;
 	if (word.organization == 4) {
 		arrayLetter = arrayLetter.reverse();
 	}
 	while(true){
-		boxesTemp = boxes;
-		for (var i = 0; i < arrayLetter.length; i++) {
-			index = (i*width)+column;
-			if (!boxesTemp[index].state) {
-				boxesTemp[index].nLetter = arrayLetter[i];
-				boxesTemp[index].state = 1; 
+		index = getRandomInt(0,(heigth-word.size+1)*width);
+		temp = boxes.slice();
+		for(var i = 0; i < arrayLetter.length; i++){
+			if(!temp[index].letter){
+				temp[index].letter = arrayLetter[i];
+				if (i == (arrayLetter.length-1)) {
+					boxes = temp.slice();
+					return;
+				}
 			}else{
-				if (boxesTemp[index].nLetter == arrayLetter[i]) {
-
-				}else{
+				if (temp[index].letter !== arrayLetter[i]) {
 					break;
 				}
 			}
-			if (i == (arrayLetter.length-1)) {
-				boxes = boxesTemp;
-				return;
-			}
+			index += width;
 		}
-		if ((column+arrayLetter.length)>heigth) {
-			failWord.push(word);
-			return;
-		}
-		column++;
 	}
 }
 
@@ -141,40 +125,30 @@ function putVertical(word){
 *@return 
 */
 function putHorizontal(word){
-	let arrayLetter = word.chars;
-	let boxesTemp;
-	let row = getRandomInt(0,(width*heigth)-word.size);
-	let index;
+	var index,indexRow,indexColumn;
+	var arrayLetter = word.chars.slice();
+	var temp;
 	if (word.organization == 2) {
 		arrayLetter = arrayLetter.reverse();
 	}
 	while(true){
-		boxesTemp = boxes;
-		for (var i = 0; i < arrayLetter.length; i++) {
-			index = row+i;
-			if (!boxesTemp[index].state) {
-				boxesTemp[index].nLetter = arrayLetter[i];
-				boxesTemp[index].state = 1; 
+		indexRow = getRandomInt(0,heigth);
+		indexColumn = getRandomInt(0,width-word.size);
+		temp = boxes.slice();
+		index = (width*indexRow)+indexColumn;
+		for(var i = 0; i < arrayLetter.length; i++){
+			if(!temp[index].letter){
+				temp[index].letter = arrayLetter[i];
+				if (i == (arrayLetter.length-1)) {
+					boxes = temp.slice();
+					return;
+				}
 			}else{
-				if (boxesTemp[index].nLetter == arrayLetter[i]) {
-
-				}else{
+				if (temp[index].letter !== arrayLetter[i]) {
 					break;
 				}
 			}
-			if (i == (arrayLetter.length-1)) {
-				boxes = boxesTemp;
-				return;
-			}
-		}
-		if ((row+arrayLetter.length)>width) {
-			row += arrayLetter.length;
-			if (row > (width*heigth)) {
-				failWord.push(word);
-				return;
-			}
-		}else{
-			row++;
+			index++;
 		}
 	}
 }
@@ -185,88 +159,34 @@ function putHorizontal(word){
 *@return 
 */
 function putDiagonalLeft(word){
-	let arrayLetter = word.chars;
-	let boxesTemp;
-	let displacement = 0;
-	let index = getRandomInt(0,(width*heigth)-word.size);
+	var index,indexRow,indexColumn;
+	var arrayLetter = word.chars.slice();
+	var temp;
 	if (word.organization == 6) {
 		arrayLetter = arrayLetter.reverse();
 	}
 	while(true){
-		boxesTemp = boxes;
-		index = 0;
-		for (var i = 0; i < arrayLetter.length; i++) {
-			if (!boxesTemp[index].state) {
-				boxesTemp[index].nLetter = arrayLetter[i];
-				boxesTemp[index].state = 1; 
+		indexRow = getRandomInt(0,(heigth-word.size+1)*width);
+		indexColumn = getRandomInt(0,width-word.size);
+		temp = boxes.slice();
+		index = indexColumn+indexRow;
+		for(var i = 0; i < arrayLetter.length;i++){
+			if(!temp[index].letter){
+				temp[index].letter = arrayLetter[i];
+				if (i == (arrayLetter.length-1)) {
+					boxes = temp.slice();
+					return;
+				}
 			}else{
-				if (boxesTemp[index].nLetter == arrayLetter[i]) {
-
-				}else{
+				if (temp[index].letter !== arrayLetter[i]) {
 					break;
 				}
 			}
-			if (i == (arrayLetter.length-1)) {
-				boxes = boxesTemp;
-				return;
-			}
-			index += width+1+displacement;
-		}
-		if ((displacement+arrayLetter.length)>width) {
-			displacement += arrayLetter.length;
-			if ((displacement+arrayLetter.length)>heigth) {
-				failWord.push(word);
-				return;
-			}
-		}else{
-			displacement++;
+			index+=width+1;
 		}
 	}
 }
 
-/**
-*@description
-*@param
-*@return 
-*/
-function putDiagonalRight(word){
-	let arrayLetter = word.chars;
-	let boxesTemp;
-	let displacement = 0;
-	let index = getRandomInt(0,(width*heigth)-word.size);
-	if (word.organization == 8) {
-		arrayLetter = arrayLetter.reverse();
-	}
-	while(true){
-		boxesTemp = boxes;
-		for (var i = 0; i < arrayLetter.length; i++) {
-			if (!boxesTemp[index].state) {
-				boxesTemp[index].nLetter = arrayLetter[i];
-				boxesTemp[index].state = 1; 
-			}else{
-				if (boxesTemp[index].nLetter == arrayLetter[i]) {
-
-				}else{
-					break;
-				}
-			}
-			if (i == (arrayLetter.length-1)) {
-				boxes = boxesTemp;
-				return;
-			}
-			index += width-1+displacement;
-		}
-		if ((displacement+arrayLetter.length)>width) {
-			displacement += arrayLetter.length;
-			if ((displacement+arrayLetter.length)>heigth) {
-				failWord.push(word);
-				return;
-			}
-		}else{
-			displacement++;
-		}
-	}
-}
 
 /**
 *@description este funcion crea un valor random entero entre min y max.
@@ -282,18 +202,49 @@ function getRandomInt(min, max) {
 
 function prueba(){
 	setWords();
-	createBoxes();
+	createSoupAlphabelt();
 	putAllWordsInBoxes();
-	let soup = "";
-	for (var i = 1; i <= (width*heigth); i++) {
-		if (boxes[i-1].state) {
-			soup += ".";
-		}
-		soup += "|"+boxes[i-1].nLetter;
-		if (i%10 == 0) {
-			console.log(soup);
-			soup = "";
-		}
-	}
+	genera_tabla();
 }
 
+
+function genera_tabla() {
+  // Obtener la referencia del elemento body
+  var body = document.getElementsByTagName("body")[0];
+ 
+  // Crea un elemento <table> y un elemento <tbody>
+  var tabla   = document.createElement("table");
+  var tblBody = document.createElement("tbody");
+ 
+  // Crea las celdas
+  for (var i = 0; i < heigth; i++) {
+    // Crea las hileras de la tabla
+    var hilera = document.createElement("tr");
+ 
+    for (var j = 0; j < width; j++) {
+      // Crea un elemento <td> y un nodo de texto, haz que el nodo de
+      // texto sea el contenido de <td>, ubica el elemento <td> al final
+      // de la hilera de la tabla
+      var celda = document.createElement("td");
+      var textoCelda = "";
+      if (boxes[(width*i)+j].letter) {
+      	textoCelda = document.createTextNode(boxes[(width*i)+j].letter);
+      }
+      else{
+      	textoCelda = document.createTextNode(".....");
+      }
+      celda.appendChild(textoCelda);
+      hilera.appendChild(celda);
+    }
+ 
+    // agrega la hilera al final de la tabla (al final del elemento tblbody)
+    tblBody.appendChild(hilera);
+  }
+ 
+  // posiciona el <tbody> debajo del elemento <table>
+  tabla.appendChild(tblBody);
+  // appends <table> into <body>
+  body.appendChild(tabla);
+  // modifica el atributo "border" de la tabla y lo fija a "2";
+  tabla.setAttribute("border", "2");
+}
