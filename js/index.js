@@ -14,6 +14,7 @@ var ejemplo = ["Repollo", "Nabo", "Rábano", "Zanahoria","Viento", "Lluvia", "Fu
 
 function start(){
 	console.log("Bienvenido!");
+	generate();
 }
 
 /**
@@ -76,7 +77,7 @@ function putAllWordsInBoxes(){
 *@return 
 */
 function putWordInBox(word){
-	let organization = getRandomInt(1,7);
+	let organization = getRandomInt(1,9);
 	word.organization = organization;
 	if (organization == 1 || organization == 2) {
 		putHorizontal(word);
@@ -87,9 +88,9 @@ function putWordInBox(word){
 	if (organization == 5 || organization == 6) {
 		putDiagonalLeft(word);
 	}
-	// if (organization == 7 || organization == 8) {
-	// 	putDiagonalRight(word);
-	// }
+	if (organization == 7 || organization == 8) {
+		putDiagonalRight(word);
+	}
 }
 
 /**
@@ -192,6 +193,39 @@ function putDiagonalLeft(word){
 	}
 }
 
+/**
+*@description
+*@param
+*@return 
+*/
+function putDiagonalRight(word){
+	var index,indexRow,indexColumn;
+	var arrayLetter = word.chars.slice();
+	var temp;
+	if (word.organization == 6) {
+		arrayLetter = arrayLetter.reverse();
+	}
+	while(true){
+		indexRow = getRandomInt(0,(heigth-word.size+1)*width);
+		indexColumn = getRandomInt(width-word.size,width);
+		temp = boxes.slice();
+		index = indexColumn+indexRow;
+		for(var i = 0; i < arrayLetter.length;i++){
+			if(!temp[index].letter){
+				temp[index].letter = arrayLetter[i];
+				if (i == (arrayLetter.length-1)) {
+					boxes = temp.slice();
+					return;
+				}
+			}else{
+				if (temp[index].letter !== arrayLetter[i]) {
+					break;
+				}
+			}
+			index+=width-1;
+		}
+	}
+}
 
 /**
 *@description este funcion crea un valor random entero entre min y max.
@@ -204,7 +238,11 @@ function getRandomInt(min, max) {
 }
 
 
-
+/**
+*@description
+*@param
+*@return 
+*/
 function generate(){
 	setWords();
 	createSoupAlphabelt();
@@ -212,6 +250,11 @@ function generate(){
 	genera_tabla();
 }
 
+/**
+*@description
+*@param
+*@return 
+*/
 function genera_tabla() {
   var body = document.getElementsByTagName("body")[0];
   if (tabla) {
@@ -242,11 +285,23 @@ function genera_tabla() {
   body.appendChild(tabla);
   tabla.setAttribute("class", "tabla");
 }
+
+/**
+*@description
+*@param
+*@return 
+*/
 function show(){
 	for(var i = 0; i < boxLetter.length;i++){
 		boxLetter[i].setAttribute("class", "letter");
 	}
 }
+
+/**
+*@description
+*@param
+*@return 
+*/
 function validar(id){
 	if (!id.checkValidity()) {
 		alert("revisar por favor");
